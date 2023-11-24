@@ -149,123 +149,70 @@ void ExceptionHandler(ExceptionType which)
     	case SyscallException:
     		switch(type) {
 
-    			case SC_Halt: {
-					DEBUG('a', "\nShutdown, initiated by user program");
+    			case SC_Halt:
+
+    				DEBUG('a', "\nShutdown, initiated by user program");
     				interrupt->Halt();
     				break;
-				}
 
-    			case SC_Create: {
-					int virtAddr;
-			char* filename;
-			DEBUG('a', "\n SC_CreateFile call ...");
-			DEBUG('a', "\n Reading virtual address of filename");
+    			case SC_Create:
+    				SC_Create_execution();
+    				break;
 
-			virtAddr = machine->ReadRegister(4); //Doc dia chi cua file tu thanh ghi R4
-			DEBUG('a', "\n Reading filename.");
-			
-			//Sao chep khong gian bo nho User sang System, voi do dang toi da la (32 + 1) bytes
-			filename = User2System(virtAddr, MaxFileLength + 1);
-			if (strlen(filename) == 0)
-			{
-				printf("\n File name is not valid");
-				DEBUG('a', "\n File name is not valid");
-				machine->WriteRegister(2, -1); //Return -1 vao thanh ghi R2
-				//IncreasePC();
-				//return;
-				break;
-			}
-			
-			if (filename == NULL)  //Neu khong doc duoc
-			{
-				printf("\n Not enough memory in system");
-				DEBUG('a', "\n Not enough memory in system");
-				machine->WriteRegister(2, -1); //Return -1 vao thanh ghi R2
-				delete filename;
-				//IncreasePC();
-				//return;
-				break;
-			}
-			DEBUG('a', "\n Finish reading filename.");
-			
-			if (!fileSystem->Create(filename, 0)) //Tao file bang ham Create cua fileSystem, tra ve ket qua
-			{
-				//Tao file that bai
-				printf("\n Error create file '%s'", filename);
-				machine->WriteRegister(2, -1);
-				delete filename;
-				//IncreasePC();
-				//return;
-				break;
-			}
-			
-			//Tao file thanh cong
-			machine->WriteRegister(2, 0);
-			delete filename;
-			//IncreasePC(); //Day thanh ghi lui ve sau de tiep tuc ghi
-			//return;
-			break;
-			}
 
-				default:
-					printf("\n Unexpected user mode exception");
-					interrupt->Halt();
 
-			}
-	
+    			default:
+    				printf("\nUnexpected user mode exception (%d %d)", which, type);
+    				interrupt->Halt();
+    				break;
+
+    		}
+    		break;
+
+    	
     	// OTHER EXCEPTIONS (7 exceptions)
 
-    	case PageFaultException: {
-			DEBUG('a', "\nNo valid translation found");
+    	case PageFaultException:
+    		DEBUG('a', "\nNo valid translation found");
     		ASSERT(false);
     		interrupt->Halt();
     		break;
-		}
-    		
 
-    	case ReadOnlyException: {
-			DEBUG('a', "\nWrite attempted to page marked read-only");
+    	case ReadOnlyException:
+    		DEBUG('a', "\nWrite attempted to page marked read-only");
     		ASSERT(false);
     		interrupt->Halt();
     		break;
-		}
-    		
-    	case BusErrorException: {
-			DEBUG('a', "\nTranslation resulted in an invalid physical address");
-    		ASSERT(false);
-    		interrupt->Halt();
-    		break;
-		}
-    		
-    	case AddressErrorException: {
-			DEBUG('a', "\nUnaligned reference or one that was beyond the end of the address space");
-    		ASSERT(false);
-    		interrupt->Halt();
-    		break;
-		}
-    		
-    	case OverflowException: {
-			DEBUG('a', "\nInteger overflow in add or sub");
-    		ASSERT(false);
-    		interrupt->Halt();
-    		break;
-		}
-    		
 
-    	case IllegalInstrException: {
-			DEBUG('a', "\nUnimplemented or reserved instr");
-    		ASSERT(false);
-    		interrupt->Halt();
-    		break;
-		}
-    		
 
-    	case NumExceptionTypes: {
-			DEBUG('a', "\nNum exception types");
+    	case BusErrorException:
+    		DEBUG('a', "\nTranslation resulted in an invalid physical address");
     		ASSERT(false);
     		interrupt->Halt();
     		break;
-		}
-    		
+
+    	case AddressErrorException:
+    		DEBUG('a', "\nUnaligned reference or one that was beyond the end of the address space");
+    		ASSERT(false);
+    		interrupt->Halt();
+    		break;
+
+    	case OverflowException:
+    		DEBUG('a', "\nInteger overflow in add or sub");
+    		ASSERT(false);
+    		interrupt->Halt();
+    		break;
+
+    	case IllegalInstrException:
+    		DEBUG('a', "\nUnimplemented or reserved instr");
+    		ASSERT(false);
+    		interrupt->Halt();
+    		break;
+
+    	case NumExceptionTypes:
+    		DEBUG('a', "\nNum exception types");
+    		ASSERT(false);
+    		interrupt->Halt();
+    		break;
     }
 }

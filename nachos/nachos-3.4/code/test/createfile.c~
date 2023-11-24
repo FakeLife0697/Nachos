@@ -1,0 +1,24 @@
+#include "syscall.h"
+#include "copyright.h"
+#define maxlen 32
+
+int main() {
+
+	int len
+	char filename[maxlen + 1];
+	
+	if (Create("text.txt") == -1) {
+	
+		printf("\n Loi tao file");
+	}
+	
+	else {
+	
+		printf("\n Tao file thanh cong");
+	}
+	
+	Halt();
+	
+
+
+}

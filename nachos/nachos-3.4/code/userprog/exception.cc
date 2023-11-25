@@ -133,91 +133,193 @@ void SC_Create_execution() {
 	return;
 }
 
+void SC_Open_execution() {
+	
+	
+}
+void SC_ReadInt_execution() {
+	char* buffer = new char[255];
+	int len = gSynchConsole->Read(buffer, 256);
+
+	int i = 0;
+	if (buffer[0] == '-')
+		i++;
+	for (; i < len; i++) {
+
+		if (buffer[i]  < '0' || buffer[i] > '9') {
+			machine->WriteRegister(2, 0);
+			return;
+		}
+	}
+	int res = atoi(buffer);
+	machine->WriteRegister(2, res);
+	return;
+}
+
+void SC_PrintInt_execution() {
+
+	int number = machine->ReadRegister(4);
+
+	if (number == 0) {
+		gSynchConsole->Write("0", 1);
+		return;
+	}
+	bool is_negative = 0;
+	int temp = abs(number);
+	int len = 0;
+
+
+	if (number < 0)
+		is_negative = 1;
+	
+	while (temp != 0)  {
+		len++;
+		temp = temp / 10;
+	}
+
+	if (is_negative)
+		len++;
+
+	char* result = new char[len + 1];
+	result[len] = '\0';
+
+	int i = len - 1;
+	temp = abs(number);
+	while (temp != 0) {
+		result[i] = (char)((temp % 10) + '0');
+		temp = temp /10;
+		i--;
+	}
+	if (is_negative)
+		result[0] = '-';
+
+    gSynchConsole->Write(result, len + 1);
+}
+
+void SC_ReadChar_execution() {
+
+	char* buffer = new char[255];
+	int len = gSynchConsole->Read(buffer, 1);
+
+	machine->WriteRegister(2, buffer[0]);
+	delete buffer;
+	return;
+}
+
+void SC_PrintChar_execution() {
+	char result = (char)(machine->ReadRegister(4));
+	gSynchConsole->Write(&result, 1);
+}
+
+void SC_ReadString_execution() {
+
+	int virtAddr = machine->ReadRegister(4);
+	int len = machine->ReadRegister(5);
+
+	char* buffer = new char [len + 1]; // 1 is terminated character
+	gSynchConsole->Read(buffer, len); // read "len" character into buffer
+	buffer[len] = '\0'; 			 // set terminated character
+
+	System2User(virtAddr, len + 1, buffer); // 1 is terminated character
+	delete[] buffer;
+	return;
+}
+
+void SC_PrintString_execution() {
+
+	int virtAddr = machine->ReadRegister(4);
+	char* buffer = User2System(virtAddr, 256); 
+	
+	int len = 0;
+	while (buffer[len] != '\0') {
+		len++;
+	}
+	gSynchConsole->Write(buffer, len);
+	delete[] buffer;
+}
+
 void ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
 
-
     switch(which) {
-
 
     	case NoException:
     		break;
 
     	// SYSCALL EXCEPTIONS
 
-    	case SyscallException:
-    		switch(type) {
+    	case SyscallException: {
+
+			switch(type) {
 
     			case SC_Halt: {
 					DEBUG('a', "\nShutdown, initiated by user program");
+					printf("\nShutdown, initiated by user program");
     				interrupt->Halt();
     				break;
 				}
-
+					
+				
     			case SC_Create: {
-					int virtAddr;
-			char* filename;
-			DEBUG('a', "\n SC_CreateFile call ...");
-			DEBUG('a', "\n Reading virtual address of filename");
+					SC_Create_execution();
+					break;
+				}
 
-			virtAddr = machine->ReadRegister(4); //Doc dia chi cua file tu thanh ghi R4
-			DEBUG('a', "\n Reading filename.");
-			
-			//Sao chep khong gian bo nho User sang System, voi do dang toi da la (32 + 1) bytes
-			filename = User2System(virtAddr, MaxFileLength + 1);
-			if (strlen(filename) == 0)
-			{
-				printf("\n File name is not valid");
-				DEBUG('a', "\n File name is not valid");
-				machine->WriteRegister(2, -1); //Return -1 vao thanh ghi R2
-				//IncreasePC();
-				//return;
-				break;
-			}
-			
-			if (filename == NULL)  //Neu khong doc duoc
-			{
-				printf("\n Not enough memory in system");
-				DEBUG('a', "\n Not enough memory in system");
-				machine->WriteRegister(2, -1); //Return -1 vao thanh ghi R2
-				delete filename;
-				//IncreasePC();
-				//return;
-				break;
-			}
-			DEBUG('a', "\n Finish reading filename.");
-			
-			if (!fileSystem->Create(filename, 0)) //Tao file bang ham Create cua fileSystem, tra ve ket qua
-			{
-				//Tao file that bai
-				printf("\n Error create file '%s'", filename);
-				machine->WriteRegister(2, -1);
-				delete filename;
-				//IncreasePC();
-				//return;
-				break;
-			}
-			
-			//Tao file thanh cong
-			machine->WriteRegister(2, 0);
-			delete filename;
-			//IncreasePC(); //Day thanh ghi lui ve sau de tiep tuc ghi
-			//return;
-			break;
-			}
+			// #5 syscall
+				// case SC_Open: {
+				// 	SC_Open_execution();
+				// 	break;
+					
+				// }
 
-				default:
+
+				case SC_ReadInt: {
+					SC_ReadInt_execution();
+					break;
+				}
+
+				case SC_PrintInt: {
+					SC_PrintInt_execution();
+					break;
+				}
+
+				case SC_ReadChar: {
+					SC_ReadChar_execution();
+					break;
+				}
+
+				case SC_PrintChar: {
+					SC_PrintChar_execution();
+					break;
+				}
+
+				case SC_ReadString: {
+					SC_ReadString_execution();
+					break;
+				}
+
+				case SC_PrintString: {
+					SC_PrintString_execution();
+					break;
+				}
+				
+				default: {
 					printf("\n Unexpected user mode exception");
-					interrupt->Halt();
-
+					
+					break;
+				}						
 			}
-	
+
+			increase_pc();
+			break;
+		}
+    						
     	// OTHER EXCEPTIONS (7 exceptions)
 
     	case PageFaultException: {
 			DEBUG('a', "\nNo valid translation found");
-    		ASSERT(false);
+    		printf("\nNo valid translation found");
     		interrupt->Halt();
     		break;
 		}
@@ -225,28 +327,28 @@ void ExceptionHandler(ExceptionType which)
 
     	case ReadOnlyException: {
 			DEBUG('a', "\nWrite attempted to page marked read-only");
-    		ASSERT(false);
+    		printf("\nWrite attempted to page marked read-only");
     		interrupt->Halt();
     		break;
 		}
     		
     	case BusErrorException: {
 			DEBUG('a', "\nTranslation resulted in an invalid physical address");
-    		ASSERT(false);
+    		printf("\nTranslation resulted in an invalid physical address");
     		interrupt->Halt();
     		break;
 		}
     		
     	case AddressErrorException: {
 			DEBUG('a', "\nUnaligned reference or one that was beyond the end of the address space");
-    		ASSERT(false);
+    		printf("\nUnaligned reference or one that was beyond the end of the address space");
     		interrupt->Halt();
     		break;
 		}
     		
     	case OverflowException: {
 			DEBUG('a', "\nInteger overflow in add or sub");
-    		ASSERT(false);
+    		printf("\nInteger overflow in add or sub");
     		interrupt->Halt();
     		break;
 		}
@@ -254,7 +356,7 @@ void ExceptionHandler(ExceptionType which)
 
     	case IllegalInstrException: {
 			DEBUG('a', "\nUnimplemented or reserved instr");
-    		ASSERT(false);
+    		printf( "\nUnimplemented or reserved instr");
     		interrupt->Halt();
     		break;
 		}
@@ -262,7 +364,7 @@ void ExceptionHandler(ExceptionType which)
 
     	case NumExceptionTypes: {
 			DEBUG('a', "\nNum exception types");
-    		ASSERT(false);
+    		printf("\nNum exception types");
     		interrupt->Halt();
     		break;
 		}

@@ -1,0 +1,27 @@
+#include "syscall.h"
+
+
+int main() {
+
+	// uncomment to test I/O for interger
+	//PrintString("\nInput your number: \n");
+	//int i = ReadInt();
+	//PrintString("Your number is: \n");
+	//PrintInt(i);
+	
+	
+	// uncomment to test I/O for char
+	//PrintString("\nInput your char: \n");
+	//char c = ReadChar();
+	//PrintString("Your char is: \n");
+	//PrintChar(c);
+	
+	char* str;
+	PrintString("\nInput your string: \n");
+	ReadString(str, 10);
+	PrintString("Your string is: \n");
+	PrintString(str);
+	
+	Halt();
+	return 0;
+}

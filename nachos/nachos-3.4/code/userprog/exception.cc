@@ -199,7 +199,7 @@ void SC_PrintInt_execution() {
 void SC_ReadChar_execution() {
 
 	char* buffer = new char[255];
-	int len = gSynchConsole->Read(buffer, 1);
+	int len = gSynchConsole->Read(buffer, 256);
 
 	machine->WriteRegister(2, buffer[0]);
 	delete buffer;

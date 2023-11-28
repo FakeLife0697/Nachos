@@ -35,7 +35,7 @@ CPP = gcc -E
 INCDIR =-I../userprog -I../threads
 CFLAGS = -G 0 -c $(INCDIR)
 
-all: halt shell matmult sort createfile basic_io help bubble_sort ascii
+all: halt shell matmult sort createfile basic_io basic_io_string basic_io_char basic_io_int help bubble_sort ascii 
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -77,6 +77,26 @@ basic_io.o: basic_io.c
 basic_io: basic_io.o start.o
 	$(LD) $(LDFLAGS) start.o basic_io.o -o basic_io.coff
 	../bin/coff2noff basic_io.coff basic_io
+
+basic_io_string.o: basic_io_string.c
+	$(CC) $(CFLAGS) -c basic_io_string.c
+basic_io_string: basic_io_string.o start.o
+	$(LD) $(LDFLAGS) start.o basic_io_string.o -o basic_io_string.coff
+	../bin/coff2noff basic_io_string.coff basic_io_string
+
+basic_io_char.o: basic_io_char.c
+	$(CC) $(CFLAGS) -c basic_io_char.c
+basic_io_char: basic_io_char.o start.o
+	$(LD) $(LDFLAGS) start.o basic_io_char.o -o basic_io_char.coff
+	../bin/coff2noff basic_io_char.coff basic_io_char
+
+basic_io_int.o: basic_io_int.c
+	$(CC) $(CFLAGS) -c basic_io_int.c
+basic_io_int: basic_io_int.o start.o
+	$(LD) $(LDFLAGS) start.o basic_io_int.o -o basic_io_int.coff
+	../bin/coff2noff basic_io_int.coff basic_io_int
+
+
 
 help.o: help.c
 	$(CC) $(CFLAGS) -c help.c

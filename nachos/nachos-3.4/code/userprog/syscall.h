@@ -30,7 +30,42 @@
 #define SC_Fork		9
 #define SC_Yield	10
 
+
+// ===== Syscall for basic input, output =====
+#define SC_ReadInt		11
+#define SC_PrintInt		12
+#define SC_ReadChar		13
+#define SC_PrintChar	14
+#define SC_ReadString	15
+#define SC_PrintString	16
+// #define SC_Seek			17
+// #define SC_Sum			30
+
+// // ===== Syscall semaphore
+
+// #define SC_CreateSemaphore	18
+// #define SC_Wait			19
+// #define SC_Signal		20
+
+
 #ifndef IN_ASM
+
+
+// ===== Function for basic input, output =====
+
+int ReadInt();
+
+void PrintInt(int number);
+
+char ReadChar();
+
+void PrintChar(char character);
+
+void ReadString(char buffer[], int length);
+
+void PrintString(char buffer[]);
+
+
 
 /* The system call interface.  These are the operations the Nachos
  * kernel needs to support, to be able to run user programs.
@@ -87,7 +122,7 @@ typedef int OpenFileId;
 #define ConsoleOutput	1  
  
 /* Create a Nachos file, with "name" */
-void Create(char *name);
+int Create(char *name);
 
 /* Open the Nachos file "name", and return an "OpenFileId" that can 
  * be used to read and write to the file.

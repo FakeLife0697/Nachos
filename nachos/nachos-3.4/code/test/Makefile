@@ -35,7 +35,7 @@ CPP = gcc -E
 INCDIR =-I../userprog -I../threads
 CFLAGS = -G 0 -c $(INCDIR)
 
-all: halt shell matmult sort
+all: halt shell matmult sort createfile basic_io basic_io_string basic_io_char basic_io_int help bubble_sort ascii 
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -65,3 +65,53 @@ matmult.o: matmult.c
 matmult: matmult.o start.o
 	$(LD) $(LDFLAGS) start.o matmult.o -o matmult.coff
 	../bin/coff2noff matmult.coff matmult
+	
+createfile.o: createfile.c
+	$(CC) $(CFLAGS) -c createfile.c
+createfile: createfile.o start.o
+	$(LD) $(LDFLAGS) start.o createfile.o -o createfile.coff
+	../bin/coff2noff createfile.coff createfile
+
+basic_io.o: basic_io.c
+	$(CC) $(CFLAGS) -c basic_io.c
+basic_io: basic_io.o start.o
+	$(LD) $(LDFLAGS) start.o basic_io.o -o basic_io.coff
+	../bin/coff2noff basic_io.coff basic_io
+
+basic_io_string.o: basic_io_string.c
+	$(CC) $(CFLAGS) -c basic_io_string.c
+basic_io_string: basic_io_string.o start.o
+	$(LD) $(LDFLAGS) start.o basic_io_string.o -o basic_io_string.coff
+	../bin/coff2noff basic_io_string.coff basic_io_string
+
+basic_io_char.o: basic_io_char.c
+	$(CC) $(CFLAGS) -c basic_io_char.c
+basic_io_char: basic_io_char.o start.o
+	$(LD) $(LDFLAGS) start.o basic_io_char.o -o basic_io_char.coff
+	../bin/coff2noff basic_io_char.coff basic_io_char
+
+basic_io_int.o: basic_io_int.c
+	$(CC) $(CFLAGS) -c basic_io_int.c
+basic_io_int: basic_io_int.o start.o
+	$(LD) $(LDFLAGS) start.o basic_io_int.o -o basic_io_int.coff
+	../bin/coff2noff basic_io_int.coff basic_io_int
+
+
+
+help.o: help.c
+	$(CC) $(CFLAGS) -c help.c
+help: help.o start.o
+	$(LD) $(LDFLAGS) start.o help.o -o help.coff
+	../bin/coff2noff help.coff help
+
+bubble_sort.o: bubble_sort.c
+	$(CC) $(CFLAGS) -c bubble_sort.c
+bubble_sort: bubble_sort.o start.o
+	$(LD) $(LDFLAGS) start.o bubble_sort.o -o bubble_sort.coff
+	../bin/coff2noff bubble_sort.coff bubble_sort
+
+ascii.o: ascii.c
+	$(CC) $(CFLAGS) -c ascii.c
+ascii: ascii.o start.o
+	$(LD) $(LDFLAGS) start.o ascii.o -o ascii.coff
+	../bin/coff2noff ascii.coff ascii

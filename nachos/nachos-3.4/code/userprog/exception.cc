@@ -108,6 +108,7 @@ void SC_Create_execution() {
 	virtAddr = machine->ReadRegister(4);
 	DEBUG('a', "\n Reading filename");
 	filename = User2System(virtAddr, MaxFileLength + 1);
+	// unsuccess
 	if (filename == NULL) {
 	
 		printf("\n Not enough memory in system");
@@ -119,6 +120,7 @@ void SC_Create_execution() {
 	
 	DEBUG('a', "\n Finish reading filename");
 	
+	// unsuccess
 	if (! fileSystem->Create(filename, 0)) {
 	
 		printf("\n Error create file '%s'", filename);
@@ -127,6 +129,7 @@ void SC_Create_execution() {
 		return;
 	}
 	
+	// success
 	machine->WriteRegister(2, 0);
 	
 	delete filename;

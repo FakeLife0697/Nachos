@@ -35,7 +35,7 @@ CPP = gcc -E
 INCDIR =-I../userprog -I../threads
 CFLAGS = -G 0 -c $(INCDIR)
 
-all: halt shell matmult sort createfile basic_io basic_io_string basic_io_char basic_io_int help bubble_sort ascii 
+all: halt shell matmult sort createfile basic_io basic_io_string basic_io_char basic_io_int help bubble_sort ascii test_IO_file
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -115,3 +115,10 @@ ascii.o: ascii.c
 ascii: ascii.o start.o
 	$(LD) $(LDFLAGS) start.o ascii.o -o ascii.coff
 	../bin/coff2noff ascii.coff ascii
+
+
+test_IO_file.o: test_IO_file.c
+	$(CC) $(CFLAGS) -c test_IO_file.c
+test_IO_file: test_IO_file.o start.o
+	$(LD) $(LDFLAGS) start.o test_IO_file.o -o test_IO_file.coff
+	../bin/coff2noff test_IO_file.coff test_IO_file

@@ -134,9 +134,211 @@ void SC_Create_execution() {
 }
 
 void SC_Open_execution() {
-	
+	// Input: arg1: Dia chi cua chuoi name, arg2: type
+			// Output: Tra ve OpenFileID neu thanh, -1 neu loi
+			// Chuc nang: Tra ve ID cua file.
+	 
+			//OpenFileID Open(char *name, int type)
+			int virtAddr = machine->ReadRegister(4); // Lay dia chi cua tham so name tu thanh ghi so 4
+			int type = machine->ReadRegister(5); // Lay tham so type tu thanh ghi so 5
+			char* filename;
+			filename = User2System(virtAddr, MaxFileLength); // Copy chuoi tu vung nho User Space sang System Space voi bo dem name dai MaxFileLength
+			//Kiem tra xem OS con mo dc file khong
+			
+			// update 4/1/2018
+			int freeSlot = fileSystem->FindFreeSlot();
+			if (freeSlot != -1) //Chi xu li khi con slot trong
+			{
+				if (type == 0 || type == 1) //chi xu li khi type = 0 hoac 1
+				{
+					
+					if ((fileSystem->openf[freeSlot] = fileSystem->Open(filename, type)) != NULL) //Mo file thanh cong
+					{
+						machine->WriteRegister(2, freeSlot); //tra ve OpenFileID
+					}
+				}
+				else if (type == 2) // xu li stdin voi type quy uoc la 2
+				{
+					machine->WriteRegister(2, 0); //tra ve OpenFileID
+				}
+				else // xu li stdout voi type quy uoc la 3
+				{
+					machine->WriteRegister(2, 1); //tra ve OpenFileID
+				}
+				delete[] filename;
+				return;
+			}
+			machine->WriteRegister(2, -1); //Khong mo duoc file return -1
+			
+			delete[] filename;
+			return;
 	
 }
+
+void SC_Close_execution() {
+	//Input id cua file(OpenFileID)
+			// Output: 0: thanh cong, -1 that bai
+			int fid = machine->ReadRegister(4); // Lay id cua file tu thanh ghi so 4
+			if (fid >= 0 && fid <= 14) //Chi xu li khi fid nam trong [0, 14]
+			{
+				if (fileSystem->openf[fid]) //neu mo file thanh cong
+				{
+					delete fileSystem->openf[fid]; //Xoa vung nho luu tru file
+					fileSystem->openf[fid] = NULL; //Gan vung nho NULL
+					machine->WriteRegister(2, 0);
+					return;
+				}
+			}
+			machine->WriteRegister(2, -1);
+			return;
+}
+
+void SC_Read_execution() {
+
+/*
+	int Read(char *buffer, int size, OpenFileId id);
+	Input: 
+		- buffer: chua ky tu read duoc
+		- size: so luong ky tu can doc
+		- id: id cua file can duoc 
+	Output:
+		Loi: -1
+		Thanh cong: -2 (file rong)
+		Thanh cong: so byte doc duoc
+*/
+
+	int virtAddr = machine->ReadRegister(4);
+	int size = machine->ReadRegister(5);
+	int file_id = machine->ReadRegister(6);
+	int oldPos;
+	int newPos;
+	char* buf;
+
+	// Kiem tra file_id hop le [0, 9]
+	if (file_id < 0 || file_id > 9) {
+
+		// Loi: file_id khong hop le
+		machine->WriteRegister(2, -1);
+		return;
+	}
+	// Kiem tra file_id ton tai
+	if (fileSystem->openf[file_id] == NULL) {
+
+		// Loi: file khong ton tai
+		machine->WriteRegister(2, -1);
+		return;
+	}
+	// Kiem tra co phai `stdout` (type = 3)
+	if (fileSystem->openf[file_id]->type == 3) {
+
+		// Loi: khong the read file stdout
+		machine->WriteRegister(2, -1);
+		return;
+	}
+
+	oldPos = fileSystem->openf[file_id]->GetCurrentPos();
+	buf = User2System(virtAddr, size); // copy chuoi tu User sang System
+	// TH: `stdin` (type = 2)
+	if (fileSystem->openf[file_id]->type == 2) {
+
+		int actual_size = gSynchConsole->Read(buf, size);
+		System2User(virtAddr, actual_size, buf);
+		machine->WriteRegister(2, actual_size);
+		delete buf;
+		return;
+	}
+	// TH: doc file bth (tra ve so byte that su)
+
+	// Doc `size` bytes, luu vao `buf` (Tra ve # bytes that su doc duoc)
+	if ((fileSystem->openf[file_id]->Read(buf, size))  > 0) {
+
+		newPos = fileSystem->openf[file_id]->GetCurrentPos();
+		// actual size = newPos - oldPos
+
+		System2User(virtAddr, newPos - oldPos, buf);
+		machine->WriteRegister(2, newPos - oldPos);
+	}
+	// Doc file rong
+	else {
+
+		machine->WriteRegister(2, -2);
+	}
+	delete buf;
+	return;
+}
+
+void SC_Write_execution() {
+/*
+	void Write(char *buffer, int size, OpenFileId id)
+	Input: 
+		- buffer: chua ky tu can ghi
+		- size: so luong ky tu can ghi
+		- id: id cua file can ghi 
+	Output:
+		Loi: -1
+		Thanh cong: so byte doc duoc
+*/
+
+	int virtAddr = machine->ReadRegister(4);
+	int size = machine->ReadRegister(5);
+	int file_id = machine->ReadRegister(6);
+	int oldPos;
+	int newPos;
+	char* buf;
+
+	// Kiem tra file_id hop le [0, 9]
+	if (file_id < 0 || file_id > 9) {
+
+		// Loi: file_id khong hop le
+		machine->WriteRegister(2, -1);
+		return;
+	}
+	// Kiem tra file_id ton tai
+	if (fileSystem->openf[file_id] == NULL) {
+
+		// Loi: file khong ton tai
+		machine->WriteRegister(2, -1);
+		return;
+	}
+
+	// Kiem tra `read-only` (type = 1) & `stdin` (type = 2)
+	int type = fileSystem->openf[file_id]->type;
+	if (type == 1 || type == 2) {
+
+		// Loi:
+		machine->WriteRegister(2, -1);
+		return;
+	}
+
+	oldPos = fileSystem->openf[file_id]->GetCurrentPos();
+	buf = User2System(virtAddr, size); // Copy chuoi can write tu User qua System
+
+	// TH: `read-write`
+	if (type == 0) {
+
+		if ((fileSystem->openf[file_id]->Write(buf, size)) > 0) {
+
+			newPos = fileSystem->openf[file_id]->GetCurrentPos();
+			machine->WriteRegister(2, newPos - oldPos);
+		}
+	}
+	// TH: `stdout`
+	if (type == 3) {
+		int i = 0;
+		while (buf[i] != '\0' && buf[i] != '\n') // Vong lap de write den khi gap ky tu '\n'
+		{
+			gSynchConsole->Write(buf + i, 1); // Su dung ham Write cua lop SynchConsole 
+			i++;
+		}
+		buf[i] = '\n';
+		gSynchConsole->Write(buf + i, 1); // Write ky tu '\n'
+		machine->WriteRegister(2, i - 1); // Tra ve so byte thuc su write duoc
+	
+	}
+	delete buf;
+	return;
+}
+
 void SC_ReadInt_execution() {
 	char* buffer = new char[255];
 	int len = gSynchConsole->Read(buffer, 256);
@@ -266,13 +468,27 @@ void ExceptionHandler(ExceptionType which)
 					break;
 				}
 
-			// #5 syscall
-				// case SC_Open: {
-				// 	SC_Open_execution();
-				// 	break;
-					
-				// }
+				case SC_Open: {
+					SC_Open_execution();
+					break;
+				}
 
+				case SC_Close: {
+					SC_Close_execution();
+					break;
+				}
+
+				case SC_Read: {
+
+					SC_Read_execution();
+					break;
+				}
+
+				case SC_Write: {
+
+					SC_Write_execution();
+					break;
+				}
 
 				case SC_ReadInt: {
 					SC_ReadInt_execution();

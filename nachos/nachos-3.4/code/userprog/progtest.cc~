@@ -58,8 +58,8 @@ void StartProcess_2(int id)
 
     currentThread->space = space;
 
-    space->InitRegisters();
-    space->RestoreState();
+    space->InitRegisters();		
+    space->RestoreState();		
 
     machine->Run();
     ASSERT(FALSE);

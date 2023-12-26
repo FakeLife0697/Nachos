@@ -38,14 +38,14 @@
 #define SC_PrintChar	14
 #define SC_ReadString	15
 #define SC_PrintString	16
-// #define SC_Seek			17
-// #define SC_Sum			30
+#define SC_Seek			17
+#define SC_Sum			30
 
-// // ===== Syscall semaphore
+// ===== Syscall semaphore
 
-// #define SC_CreateSemaphore	18
-// #define SC_Wait			19
-// #define SC_Signal		20
+#define SC_CreateSemaphore	18
+#define SC_Wait			19
+#define SC_Signal		20
 
 
 #ifndef IN_ASM
@@ -143,7 +143,13 @@ int Read(char *buffer, int size, OpenFileId id);
 /* Close the file, we're done reading and writing to it. */
 void Close(OpenFileId id);
 
+/* Semaphore functions
+ */
+void CreateSemaphore(char* name, int semval);
 
+void Wait(char* name);
+
+void Signal(char* name);
 
 /* User-level thread operations: Fork and Yield.  To allow multiple
  * threads to run within a user program. 

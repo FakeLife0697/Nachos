@@ -502,11 +502,11 @@ void SC_Exit_execution() {
 
 	machine->WriteRegister(2, tmp);
 
-	// currentThread->FreeSpace();
-	// currentThread->Finish();
+	currentThread->FreeSpace();
+	currentThread->Finish();
 }
 
-void SC_CreateSemaphore() {
+void SC_CreateSemaphore_execution() {
 	// Đọc địa chỉ “name” từ thanh ghi r4. 
 	int addr;
 	addr = machine->ReadRegister(4);
@@ -529,8 +529,8 @@ void SC_CreateSemaphore() {
 
 	// Gọi thực hiện hàm semTab->Create(name,semval) để tạo Semaphore, nếu có lỗi thì báo lỗi.
 	int tmp;
-	tmp = semTab->Create(name, samval);
-	if(res == -1)
+	tmp = semTab->Create(name, semval);
+	if(tmp == -1)
 	{
 		DEBUG('a', "\n Khong the khoi tao semaphore");
 		printf("\n Khong the khoi tao semaphore");
@@ -540,6 +540,84 @@ void SC_CreateSemaphore() {
 	}
  
 	// Lưu kết quả thực hiện vào thanh ghi r2.
+	machine->WriteRegister(2, tmp);
+
+	delete[] name;
+}
+
+void SC_Signal_execution() {
+	// Đọc địa chỉ “name” từ thanh ghi r4. 
+	int addr;
+	addr = machine->ReadRegister(4);
+	
+	// Tên địa chỉ “name” lúc này đang ở trong user space. 
+	// Gọi hàm User2System đã được khai báo trong lớp machine để chuyển vùng nhớ user space tới vùng nhớ system space. 
+	char* name;
+	name = User2System(addr, MaxFileLength + 1);
+
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+
+	// Gọi phương thức Signal() của lớp Stable.  
+	int tmp;
+	tmp = semTab->Signal(name);
+
+	// Kiểm tra Semaphore “name” này có trong bảng sTab chưa, nếu chưa có thì báo lỗi.
+	if(tmp == -1)
+	{
+		DEBUG('a', "\n Khong ton tai ten semaphore nay!");
+		printf("\n Khong ton tai ten semaphore nay!");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;				
+	}
+
+	// Lưu kết quả thực hiện vào thanh ghi r2. 
+	machine->WriteRegister(2, tmp);
+
+	delete[] name;
+}
+
+void SC_Wait_execution() {
+	// Đọc địa chỉ “name” từ thanh ghi r4. 
+	int addr;
+	addr = machine->ReadRegister(4);
+	
+	// Tên địa chỉ “name” lúc này đang ở trong user space. 
+	// Gọi hàm User2System đã được khai báo trong lớp machine để chuyển vùng nhớ user space tới vùng nhớ system space. 
+	char* name;
+	name = User2System(addr, MaxFileLength + 1);
+
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+
+	// Gọi phương thức Wait() của lớp Stable.  
+	int tmp;
+	tmp = semTab->Wait(name);
+
+	// Kiểm tra Semaphore “name” này có trong bảng sTab chưa, nếu chưa có thì báo lỗi.
+	if(tmp == -1)
+	{
+		DEBUG('a', "\n Khong ton tai ten semaphore nay!");
+		printf("\n Khong ton tai ten semaphore nay!");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;				
+	}
+
+	// Lưu kết quả thực hiện vào thanh ghi r2. 
 	machine->WriteRegister(2, tmp);
 
 	delete[] name;
@@ -644,13 +722,13 @@ void ExceptionHandler(ExceptionType which)
 					break;
 				}
 
-				case SC_Up: {
-					SC_Up_execution();
+				case SC_Signal: {
+					SC_Signal_execution();
 					break;
 				}
 
-				case SC_Down: {
-					SC_Down_execution();
+				case SC_Wait: {
+					SC_Wait_execution();
 					break;
 				}
 

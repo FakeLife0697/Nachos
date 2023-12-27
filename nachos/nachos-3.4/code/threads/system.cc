@@ -30,6 +30,11 @@ SynchDisk   *synchDisk;
 #ifdef USER_PROGRAM	// requires either FILESYS or FILESYS_STUB
 Machine *machine;	// user program memory and registers
 SynchConsole* gSynchConsole;
+
+Semaphore *addrLock;	// semaphore
+BitMap *gPhysPageBitMap;// quan ly cac frame
+PTable *pTab;		// quan ly bang tien trinh
+STable *semTab;		// quan ly semaphore
 #endif
 
 #ifdef NETWORK

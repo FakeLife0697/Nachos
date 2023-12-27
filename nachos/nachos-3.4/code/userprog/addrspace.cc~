@@ -213,7 +213,7 @@ AddrSpace::AddrSpace(char* filename)
     if (noffH.code.size > 0)
     {
 	for(i = 0; i < numCodePage ; i++)
-	        executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr]) + (pageTable[i].physicalPage*PageSize), i < (numCodePage - 1) ? PageSize : lastCodePageSize, noffH.code.inFileAddr + i*PageSize);
+	    executable->ReadAt(&(machine->mainMemory[noffH.code.virtualAddr]) + (pageTable[i].physicalPage*PageSize), i < (numCodePage - 1) ? PageSize : lastCodePageSize, noffH.code.inFileAddr + i*PageSize);
     }
 
     //Check whether last page of code segment is full and copy the first part of

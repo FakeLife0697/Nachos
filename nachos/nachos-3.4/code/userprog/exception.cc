@@ -545,8 +545,7 @@ void SC_CreateSemaphore_execution() {
 	delete[] name;
 }
 
-// Up = Signal
-void SC_Up_execution() {
+void SC_Signal_execution() {
 	// Đọc địa chỉ “name” từ thanh ghi r4. 
 	int addr;
 	addr = machine->ReadRegister(4);
@@ -585,8 +584,7 @@ void SC_Up_execution() {
 	delete[] name;
 }
 
-// Down = Wait
-void SC_Down_execution() {
+void SC_Wait_execution() {
 	// Đọc địa chỉ “name” từ thanh ghi r4. 
 	int addr;
 	addr = machine->ReadRegister(4);
@@ -724,13 +722,13 @@ void ExceptionHandler(ExceptionType which)
 					break;
 				}
 
-				case SC_Up: {
-					SC_Up_execution();
+				case SC_Signal: {
+					SC_Signal_execution();
 					break;
 				}
 
-				case SC_Down: {
-					SC_Down_execution();
+				case SC_Wait: {
+					SC_Wait_execution();
 					break;
 				}
 

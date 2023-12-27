@@ -502,8 +502,8 @@ void SC_Exit_execution() {
 
 	machine->WriteRegister(2, tmp);
 
-	// currentThread->FreeSpace();
-	// currentThread->Finish();
+	currentThread->FreeSpace();
+	currentThread->Finish();
 }
 
 void SC_CreateSemaphore_execution() {

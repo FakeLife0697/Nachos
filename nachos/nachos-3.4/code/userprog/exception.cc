@@ -529,8 +529,8 @@ void SC_CreateSemaphore_execution() {
 
 	// Gọi thực hiện hàm semTab->Create(name,semval) để tạo Semaphore, nếu có lỗi thì báo lỗi.
 	int tmp;
-	tmp = semTab->Create(name, samval);
-	if(res == -1)
+	tmp = semTab->Create(name, semval);
+	if(tmp == -1)
 	{
 		DEBUG('a', "\n Khong the khoi tao semaphore");
 		printf("\n Khong the khoi tao semaphore");

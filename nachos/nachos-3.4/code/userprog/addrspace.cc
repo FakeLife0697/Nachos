@@ -134,7 +134,6 @@ AddrSpace::AddrSpace(char* filename)
     if (executable == NULL)
     {
     	printf("\nAddrspace::Error opening file: %s",filename);
-	DEBUG(dbgFile,"\n Error opening file.");
 	return;
     }
 

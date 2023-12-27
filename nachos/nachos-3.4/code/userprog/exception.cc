@@ -440,6 +440,111 @@ void SC_PrintString_execution() {
 	delete[] buffer;
 }
 
+void SC_Exec_execution() {
+	// Đọc địa chỉ tên chương trình “name” từ thanh ghi r4. 
+	int addr;
+	addr = machine->ReadRegister(4);
+
+	// Tên chương trình lúc này đang ở trong user space.
+	// Gọi hàm User2System đã được khai báo trong lớp machine để chuyển vùng nhớ user space tới vùng nhớ system space. 
+	char* name;
+	name = User2System(addr, MaxFileLength + 1);
+
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+
+	// Nếu bị lỗi thì báo “Không mở được file” và gán -1 vào thanh ghi 2. 
+	OpenFile* opFile = fileSystem->Open(name);
+	if (opFile == NULL)
+	{
+		printf("SC_Exec:: Can't open file.");
+		machine->WriteRegister(2, -1);
+	}
+	// Nếu không có lỗi thì gọi pTab-> ExecUpdate(name), 
+	// trả về và lưu kết quả thực thi phương thức này vào thanh ghi r2.
+	else
+	{
+		int tmp = pTab->ExecUpdate(name);
+		machine->WriteRegister(2, tmp);
+	}
+
+	delete opFile;
+	delete[] name;
+}
+
+void SC_Join_execution() {
+	// Đọc id của tiến trình cần Join từ thanh ghi r4. 
+	int id;
+	id = machine->ReadRegister(4);
+
+	// Gọi thực hiện pTab->JoinUpdate(id) và lưu kết quả thực hiện của hàm vào thanh ghi r2.
+	int tmp;
+	tmp = pTab->JoinUpdate(id);
+
+	machine->WriteRegister(2, tmp);
+}
+
+void SC_Exit_execution() {
+	// Đọc exitStatus từ thanh ghi r4 
+	int exitStatus;
+	exitStatus = machine->ReadRegister(4);
+
+	// Gọi thực hiện pTab->ExitUpdate(exitStatus)
+	// và lưu kết quả thực hiện của hàm vào thanh ghi r2.
+	int tmp;
+	tmp = pTab->ExitUpdate(exitStatus);
+
+	machine->WriteRegister(2, tmp);
+
+	// currentThread->FreeSpace();
+	// currentThread->Finish();
+}
+
+void SC_CreateSemaphore() {
+	// Đọc địa chỉ “name” từ thanh ghi r4. 
+	int addr;
+	addr = machine->ReadRegister(4);
+
+	// Đọc giá trị “semval” từ thanh ghi r5. 
+	int semval;
+	semval = machine->ReadRegister(5);
+
+	// Tên địa chỉ “name” lúc này đang ở trong user space.
+	// Gọi hàm User2System đã được khai báo trong lớp machine để chuyển vùng nhớ user space tới vùng nhớ system space. 
+	char* name = User2System(addr, MaxFileLength + 1);
+	if(name == NULL)
+	{
+		DEBUG('a', "\n Not enough memory in System");
+		printf("\n Not enough memory in System");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;
+	}
+
+	// Gọi thực hiện hàm semTab->Create(name,semval) để tạo Semaphore, nếu có lỗi thì báo lỗi.
+	int tmp;
+	tmp = semTab->Create(name, samval);
+	if(res == -1)
+	{
+		DEBUG('a', "\n Khong the khoi tao semaphore");
+		printf("\n Khong the khoi tao semaphore");
+		machine->WriteRegister(2, -1);
+		delete[] name;
+		return;				
+	}
+ 
+	// Lưu kết quả thực hiện vào thanh ghi r2.
+	machine->WriteRegister(2, tmp);
+
+	delete[] name;
+}
+
 void ExceptionHandler(ExceptionType which)
 {
     int type = machine->ReadRegister(2);
@@ -461,7 +566,6 @@ void ExceptionHandler(ExceptionType which)
     				interrupt->Halt();
     				break;
 				}
-					
 				
     			case SC_Create: {
 					SC_Create_execution();
@@ -519,10 +623,39 @@ void ExceptionHandler(ExceptionType which)
 					SC_PrintString_execution();
 					break;
 				}
+
+				case SC_Exec: {
+					SC_Exec_execution();
+					break;
+				}
+
+				case SC_Join: {
+					SC_Join_execution();
+					break;
+				}
 				
+				case SC_Exit: {
+					SC_Exit_execution();
+					break;
+				}
+
+				case SC_CreateSemaphore: {
+					SC_CreateSemaphore_execution();
+					break;
+				}
+
+				case SC_Up: {
+					SC_Up_execution();
+					break;
+				}
+
+				case SC_Down: {
+					SC_Down_execution();
+					break;
+				}
+
 				default: {
 					printf("\n Unexpected user mode exception");
-					
 					break;
 				}						
 			}

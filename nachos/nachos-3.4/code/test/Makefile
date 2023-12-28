@@ -35,7 +35,7 @@ CPP = gcc -E
 INCDIR =-I../userprog -I../threads
 CFLAGS = -G 0 -c $(INCDIR)
 
-all: halt shell matmult sort createfile basic_io basic_io_string basic_io_char basic_io_int help bubble_sort ascii test_IO_file ping pong scheduler
+all: halt shell matmult sort createfile basic_io basic_io_string basic_io_char basic_io_int help bubble_sort ascii test_IO_file ping pong scheduler ping2 pong2 scheduler2
 
 start.o: start.s ../userprog/syscall.h
 	$(CPP) $(CPPFLAGS) start.c > strt.s
@@ -140,3 +140,23 @@ scheduler.o: scheduler.c
 scheduler: scheduler.o start.o
 	$(LD) $(LDFLAGS) start.o scheduler.o -o scheduler.coff
 	../bin/coff2noff scheduler.coff scheduler
+
+ping2.o: ping2.c
+	$(CC) $(CFLAGS) -c ping2.c
+ping2: ping2.o start.o
+	$(LD) $(LDFLAGS) start.o ping2.o -o ping2.coff
+	../bin/coff2noff ping2.coff ping2
+
+pong2.o: pong2.c
+	$(CC) $(CFLAGS) -c pong2.c
+pong2: pong2.o start.o
+	$(LD) $(LDFLAGS) start.o pong2.o -o pong2.coff
+	../bin/coff2noff pong2.coff pong2
+
+scheduler2.o: scheduler2.c
+	$(CC) $(CFLAGS) -c scheduler2.c
+scheduler2: scheduler2.o start.o
+	$(LD) $(LDFLAGS) start.o scheduler2.o -o scheduler2.coff
+	../bin/coff2noff scheduler2.coff scheduler2
+
+

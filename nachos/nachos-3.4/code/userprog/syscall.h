@@ -38,8 +38,8 @@
 #define SC_PrintChar	14
 #define SC_ReadString	15
 #define SC_PrintString	16
-#define SC_Seek			17
-#define SC_Sum			30
+//#define SC_Seek			17
+//#define SC_Sum			30
 
 // ===== Syscall semaphore
 
@@ -145,11 +145,11 @@ void Close(OpenFileId id);
 
 /* Semaphore functions
  */
-void CreateSemaphore(char* name, int semval);
+int CreateSemaphore(char* name, int semval);
 
-void Wait(char* name);
+int Wait(char* name);
 
-void Signal(char* name);
+int Signal(char* name);
 
 /* User-level thread operations: Fork and Yield.  To allow multiple
  * threads to run within a user program. 

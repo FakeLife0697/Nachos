@@ -1,12 +1,15 @@
 #include "syscall.h"
 
-
-void main()
+int main()
 {
 	int pingID, pongID;
-	PrintString("Ping-Pong program...\n\n");
+	PrintString("Normal Ping-Pong application\n\n");
+
 	pingID = Exec("./test/ping");
 	pongID = Exec("./test/pong");
+
 	Join(pingID);
 	Join(pongID);	
+
+	return 0;
 }

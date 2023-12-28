@@ -1,3 +1,12 @@
+/* ----------------------------------------------
+ * Team member:
+ * 21120223 - Dương Hải Đông
+ * 21120240 - Nguyễn Vân Hào
+ * 21120256 - Nguyễn Minh Huy
+ * 21120257 - Tôn Anh Huy
+ * ----------------------------------------------
+ */
+
 #include "ptable.h"
 #include "system.h"
 #include "openfile.h"

@@ -5,9 +5,6 @@
 #include "sem.h"
 #define MAX_SEMAPHORE 10
 
-
-#endif // STABLE_H
-
 class STable
 {
 private:
@@ -33,3 +30,5 @@ public:
 
 	
 };
+
+#endif // STABLE_H

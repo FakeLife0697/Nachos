@@ -33,7 +33,7 @@ PTable::~PTable()
 			delete pcb[i];
     }
 		
-	if( bmsem != 0)
+	if(bmsem != 0)
 		delete bmsem;
 }
 

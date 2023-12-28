@@ -1,6 +1,15 @@
 // pcb.cc, "Process Control Block"
 // All rights reserved.
 
+/* ----------------------------------------------
+ * Team member:
+ * 21120223 - Dương Hải Đông
+ * 21120240 - Nguyễn Vân Hào
+ * 21120256 - Nguyễn Minh Huy
+ * 21120257 - Tôn Anh Huy
+ * ----------------------------------------------
+ */
+
 #include "pcb.h"
 #include "utility.h"
 #include "system.h"

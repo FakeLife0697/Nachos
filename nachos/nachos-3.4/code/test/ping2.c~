@@ -1,0 +1,14 @@
+#include "syscall.h"
+
+int main()
+{
+	int i;
+	for (i = 0; i < 1000; i++)
+	{
+		Down("ping2");
+		PrintChar('A');
+		Up("pong2");
+	}
+
+	Halt();
+}

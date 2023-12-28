@@ -145,11 +145,11 @@ void Close(OpenFileId id);
 
 /* Semaphore functions
  */
-void CreateSemaphore(char* name, int semval);
+int CreateSemaphore(char* name, int semval);
 
-void Wait(char* name);
+int Wait(char* name);
 
-void Signal(char* name);
+int Signal(char* name);
 
 /* User-level thread operations: Fork and Yield.  To allow multiple
  * threads to run within a user program. 

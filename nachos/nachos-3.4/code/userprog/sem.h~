@@ -3,6 +3,15 @@
 #include "synch.h"
 #include "bitmap.h"
 
+/* ----------------------------------------------
+ * Team member:
+ * 21120223 - Dương Hải Đông
+ * 21120240 - Nguyễn Vân Hào
+ * 21120256 - Nguyễn Minh Huy
+ * 21120257 - Tôn Anh Huy
+ * ----------------------------------------------
+ */
+
 // Lop Sem dung de quan ly semaphore.
 class Sem
 {
@@ -39,6 +48,5 @@ public:
 		return this->name;
 	}
 };
-
 
 #endif // SEM_H

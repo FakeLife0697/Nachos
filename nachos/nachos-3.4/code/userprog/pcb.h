@@ -3,6 +3,15 @@
 //	Save all information to control the process
 // All rights reserved.
 
+/* ----------------------------------------------
+ * Team member:
+ * 21120223 - Dương Hải Đông
+ * 21120240 - Nguyễn Vân Hào
+ * 21120256 - Nguyễn Minh Huy
+ * 21120257 - Tôn Anh Huy
+ * ----------------------------------------------
+ */
+
 #ifndef PCB_H
 #define PCB_H
 

@@ -1,9 +1,20 @@
+/* ----------------------------------------------
+ * Team member:
+ * 21120223 - Dương Hải Đông
+ * 21120240 - Nguyễn Vân Hào
+ * 21120256 - Nguyễn Minh Huy
+ * 21120257 - Tôn Anh Huy
+ * ----------------------------------------------
+ */
+
 #ifndef STABLE_H
 #define STABLE_H
 #include "synch.h"
 #include "bitmap.h"
 #include "sem.h"
 #define MAX_SEMAPHORE 10
+
+
 
 class STable
 {

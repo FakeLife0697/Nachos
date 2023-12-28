@@ -113,7 +113,7 @@ void SC_Create_execution() {
 		printf("\n Not enough memory in system");
 		DEBUG('a', "\n Not enough memory in system");
 		machine->WriteRegister(2, -1);
-		delete filename;
+		delete[] filename;
 		return;
 	}
 	
@@ -123,13 +123,13 @@ void SC_Create_execution() {
 	
 		printf("\n Error create file '%s'", filename);
 		machine->WriteRegister(2, -1);
-		delete filename;
+		delete[] filename;
 		return;
 	}
 	
 	machine->WriteRegister(2, 0);
 	
-	delete filename;
+	delete[] filename;
 	return;
 }
 

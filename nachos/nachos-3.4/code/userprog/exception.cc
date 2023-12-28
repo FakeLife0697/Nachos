@@ -106,8 +106,11 @@ void SC_Create_execution() {
 	DEBUG('a', "\n Reading virtual address of filename");
 	
 	virtAddr = machine->ReadRegister(4);
+
 	DEBUG('a', "\n Reading filename");
+
 	filename = User2System(virtAddr, MaxFileLength + 1);
+
 	if (filename == NULL) {
 	
 		printf("\n Not enough memory in system");

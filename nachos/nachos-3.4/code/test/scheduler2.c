@@ -7,7 +7,7 @@ int main()
 	int semPong;
 	int semPing;
 
-	PrintString("Test chuong trinh Ping Pong:\n\n");
+	PrintString(" Test Ping Pong program...:\n\n");
 
 	// tao 2 semaphore
 	semPing = CreateSemaphore("ping2", 1);

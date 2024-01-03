@@ -7,11 +7,11 @@ int main()
 	int semPong;
 	int semPing;
 
-	PrintString("Test chuong trinh Ping Pong:\n\n");
+	PrintString("Ping Pong program:\n\n");
 
 	// tao 2 semaphore
 	semPing = CreateSemaphore("ping2", 1);
-	semPong = CreateSemaphore("pong", 0);
+	semPong = CreateSemaphore("pong2", 0);
 
 	// tao 2 tien trinh
 	pingID = Exec("./test/ping2");

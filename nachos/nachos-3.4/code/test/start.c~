@@ -195,13 +195,13 @@ Wait:
 	j	$31
 	.end Wait
 
-	.globl PrintString
-	.ent PrintString
-PrintString:
-	addiu $2, $0, SC_PrintString
+	.globl Signal
+	.ent Signal
+Signal:
+	addiu $2, $0, SC_Signal
 	syscall
 	j	$31
-	.end PrintString
+	.end Signal
 
 /* dummy function to keep gcc happy */
         .globl  __main
